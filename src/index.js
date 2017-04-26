@@ -7,6 +7,6 @@ require("babel-polyfill");
 // other babel configuration, if necessary
 
 // load and start your app
-let App = require("./app.js");
-let app = new App.default;
-app.mp4scc(`${process.cwd()}/test-sources/source.mp4`, `${process.cwd()}/test-sources/caption.scc`);
+let LibCaptionNode = require("./libCaptionNode.js");
+let libCaptionNode = new LibCaptionNode.default;
+libCaptionNode.embedscc(`${process.cwd()}/test-sources/source.mp4`, `${process.cwd()}/test-sources/caption.scc`);

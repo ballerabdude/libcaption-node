@@ -1,4 +1,3 @@
-build
 cmake-build-debug
 libcaption-build
 node_modules
