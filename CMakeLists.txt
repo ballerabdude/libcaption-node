@@ -1,0 +1,109 @@
+cmake_minimum_required(VERSION 2.8)
+project(libcaption-node)
+set(CMAKE_CXX_FLAGS "-Wall -O3")
+add_definitions(-D__STDC_CONSTANT_MACROS)
+if (WIN32)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
+option(debug "Enable debug symbols." OFF)
+if (NOT CMAKE_BUILD_TYPE OR NOT debug)
+    set(CMAKE_BUILD_TYPE Release)
+else()
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+# Don't need to prefix local includes with "caption/*"
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libcaption/caption)
+
+option(ENABLE_RE2C "Use RE2C to generate eia608.c" ON)
+set(eia608_from_utf8_c ${CMAKE_SOURCE_DIR}/libcaption/src/eia608_from_utf8.c)
+set(eia608_from_utf8_c_cached ${CMAKE_SOURCE_DIR}/libcaption/src/eia608_from_utf8.c.cached)
+if(ENABLE_RE2C)
+  find_program(RE2C re2c)
+  set(eia608_from_utf8_re2c ${CMAKE_SOURCE_DIR}/libcaption/src/eia608_from_utf8.re2c)
+  if(RE2C)
+    message(STATUS "Found re2c: ${RE2C}")
+
+    # Create a temporary file until re2c regenerates it so that CMake doesn't
+    # complain about the missing source file
+    if(NOT EXISTS ${eia608_from_utf8_c})
+      file(WRITE ${eia608_from_utf8_c} "")
+    endif()
+
+    add_custom_target(re2c
+      COMMAND ${CMAKE_COMMAND} -E remove ${eia608_from_utf8_c}
+      COMMAND ${RE2C} -bis --no-generation-date --no-version -o ${eia608_from_utf8_c} ${eia608_from_utf8_re2c}
+      COMMAND ${CMAKE_COMMAND} -E copy ${eia608_from_utf8_c} ${eia608_from_utf8_c_cached}
+      DEPENDS ${eia608_from_utf8_re2c}
+      COMMENT "Generating ${eia608_from_utf8_re2c}")
+  else()
+    message(SEND_ERROR "Could not find re2c executable")
+  endif()
+else()
+  message(WARNING "Using cached re2c file: ${eia608_from_utf8_c_cached}")
+  if(NOT EXISTS ${eia608_from_utf8_c})
+    file(WRITE ${eia608_from_utf8_c} "")
+  endif()
+  configure_file(${eia608_from_utf8_c_cached} ${eia608_from_utf8_c} COPYONLY)
+endif()
+
+set(CAPTION_SOURCES
+  libcaption/src/utf8.c
+  libcaption/src/srt.c
+  libcaption/src/scc.c
+  libcaption/src/avc.c
+  libcaption/src/xds.c
+  libcaption/src/cea708.c
+  libcaption/src/caption.c
+  libcaption/src/eia608.c
+  libcaption/src/eia608_charmap.c
+  libcaption/src/eia608_from_utf8.c
+)
+
+set(CAPTION_HEADERS
+  libcaption/caption/avc.h
+  libcaption/caption/caption.h
+  libcaption/caption/cea708.h
+  libcaption/caption/eia608.h
+  libcaption/caption/eia608_charmap.h
+  libcaption/caption/scc.h
+  libcaption/caption/srt.h
+  libcaption/caption/utf8.h
+  libcaption/caption/xds.h
+)
+
+add_library(caption ${CAPTION_SOURCES})
+
+if(ENABLE_RE2C)
+  add_dependencies(caption re2c)
+endif()
+
+if(CMAKE_VERSION VERSION_EQUAL 2.8.12 OR CMAKE_VERSION VERSION_GREATER 2.8.12)
+target_include_directories(caption PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+option(BUILD_EXAMPLES "Build examples" ON)
+if(BUILD_EXAMPLES)
+  add_subdirectory(libcaption/examples)
+endif()
+
+# unit-tests
+#add_executable(eia608_test unit_tests/eia608_test.c )
+#target_link_libraries(eia608_test caption)
+
+#add_executable(test_captions unit_tests/test_sei.c )
+#target_link_libraries(test_captions caption)
+
+install (TARGETS caption DESTINATION lib EXPORT caption-targets)
+install (FILES ${CAPTION_HEADERS} DESTINATION include/caption)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcaption/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/libcaption/Doxyfile @ONLY)
+  add_custom_target(doc
+  ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/libcaption/Doxyfile
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/libcaption
+  COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
+endif(DOXYGEN_FOUND)
