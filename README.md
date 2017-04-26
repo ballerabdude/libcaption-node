@@ -1,9 +1,9 @@
-#libcaption-node
+# libcaption-node
 
 libcaption-node enables you to embed captions 608 captions into your videos. Most of the work is done with 
 [ffmpeg](https://github.com/xonecas/ffmpeg-node) and [libcaption](https://github.com/szatmary/libcaption).
 
-##Examples
+## Examples
 
 ```javascript
 import LibCaptionNode from 'libcaption-node';
