@@ -8,5 +8,7 @@ require("babel-polyfill");
 
 // load and start your app
 let LibCaptionNode = require("./libCaptionNode.js");
-let libCaptionNode = new LibCaptionNode.default;
-libCaptionNode.embedscc(`${process.cwd()}/test-sources/source.mp4`, `${process.cwd()}/test-sources/caption.scc`);
+// let libCaptionNode = new LibCaptionNode.default;
+// libCaptionNode.embedscc(`${process.cwd()}/test-sources/source.mp4`, `${process.cwd()}/test-sources/caption.scc`);
+
+module.exports = LibCaptionNode.default;

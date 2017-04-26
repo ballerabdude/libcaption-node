@@ -8,7 +8,7 @@ libcaption-node enables you to embed captions 608 captions into your videos. Mos
 ```javascript
 import LibCaptionNode from 'libcaption-node';
 
-const libCaptionNode = new LibCaptionNode();
+const libCaptionNode = new LibCaptionNode.default();
 
 // This will overwrite your input source with the new output
 libCaptionNode.embedscc(INPUT, SCC_FILE).then((inputWithSourcePath) => {
