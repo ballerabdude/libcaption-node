@@ -9,4 +9,4 @@ require("babel-polyfill");
 // load and start your app
 let App = require("./app.js");
 let app = new App.default;
-app.scc2srt(`${process.cwd()}/test-sources/caption.scc`);
+app.mp4scc(`${process.cwd()}/test-sources/source.mp4`, `${process.cwd()}/test-sources/caption.scc`);
