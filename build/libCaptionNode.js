@@ -31,6 +31,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var logger = _log4js2.default.getLogger('[' + __filename.split('/')[__filename.split('/').length - 1] + ']');
 
+
+logger.level = process.env.LOG_LEVEL || 'error';
+
 var LibCaptionNode = function () {
   function LibCaptionNode() {
     _classCallCheck(this, LibCaptionNode);
@@ -39,9 +42,9 @@ var LibCaptionNode = function () {
   }
 
   _createClass(LibCaptionNode, [{
-    key: 'mp4scc',
+    key: 'embedscc',
     value: function () {
-      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(mp4FilePath, sccFilePath) {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(input, sccFilePath, output) {
         var tmpDir, flvFilePath, flvFilePathECC;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -72,7 +75,7 @@ var LibCaptionNode = function () {
                 flvFilePath = tmpDir.path + '/source.flv';
                 _context.prev = 12;
                 _context.next = 15;
-                return this._convertToFlv(mp4FilePath, flvFilePath);
+                return this._convertToFlv(input, flvFilePath);
 
               case 15:
                 _context.next = 20;
@@ -105,7 +108,7 @@ var LibCaptionNode = function () {
               case 30:
                 _context.prev = 30;
                 _context.next = 33;
-                return this._convertToOutput(flvFilePathECC, mp4FilePath);
+                return this._convertToOutput(flvFilePathECC, output);
 
               case 33:
                 _context.next = 38;
@@ -118,9 +121,9 @@ var LibCaptionNode = function () {
 
               case 38:
 
-                logger.debug(mp4FilePath);
+                logger.debug(output);
 
-                return _context.abrupt('return', true);
+                return _context.abrupt('return', output);
 
               case 40:
               case 'end':
@@ -130,18 +133,243 @@ var LibCaptionNode = function () {
         }, _callee, this, [[1, 8], [12, 17], [22, 27], [30, 35]]);
       }));
 
-      function mp4scc(_x, _x2) {
+      function embedscc(_x, _x2, _x3) {
         return _ref.apply(this, arguments);
       }
 
-      return mp4scc;
+      return embedscc;
+    }()
+  }, {
+    key: 'embedsrt',
+    value: function () {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(input, srtFilePath, output) {
+        var tmpDir, flvFilePath, flvFilePathECC;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+
+                // Create temp dir to work in
+                tmpDir = void 0;
+                _context2.prev = 1;
+                _context2.next = 4;
+                return this._createTmpDir();
+
+              case 4:
+                tmpDir = _context2.sent;
+
+                logger.debug('Dir: ', tmpDir.path);
+                _context2.next = 11;
+                break;
+
+              case 8:
+                _context2.prev = 8;
+                _context2.t0 = _context2['catch'](1);
+                throw logger.error(_context2.t0);
+
+              case 11:
+
+                // set the output for the flv
+                flvFilePath = tmpDir.path + '/source.flv';
+                _context2.prev = 12;
+                _context2.next = 15;
+                return this._convertToFlv(input, flvFilePath);
+
+              case 15:
+                _context2.next = 20;
+                break;
+
+              case 17:
+                _context2.prev = 17;
+                _context2.t1 = _context2['catch'](12);
+                throw logger.error(_context2.t1);
+
+              case 20:
+
+                logger.debug(flvFilePath);
+
+                // set the output for the flv with captions
+                flvFilePathECC = tmpDir.path + '/source_ecc.flv';
+                _context2.prev = 22;
+                _context2.next = 25;
+                return this.libcaption.flvsrt(flvFilePath, srtFilePath, flvFilePathECC);
+
+              case 25:
+                _context2.next = 30;
+                break;
+
+              case 27:
+                _context2.prev = 27;
+                _context2.t2 = _context2['catch'](22);
+                throw logger.error(_context2.t2);
+
+              case 30:
+                _context2.prev = 30;
+                _context2.next = 33;
+                return this._convertToOutput(flvFilePathECC, output);
+
+              case 33:
+                _context2.next = 38;
+                break;
+
+              case 35:
+                _context2.prev = 35;
+                _context2.t3 = _context2['catch'](30);
+                throw logger.error(_context2.t3);
+
+              case 38:
+
+                logger.debug(output);
+
+                return _context2.abrupt('return', output);
+
+              case 40:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[1, 8], [12, 17], [22, 27], [30, 35]]);
+      }));
+
+      function embedsrt(_x4, _x5, _x6) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return embedsrt;
+    }()
+  }, {
+    key: 'mp42srt',
+    value: function () {
+      var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(input) {
+        var tmpDir, flvFilePath, srt;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                // Create temp dir to work in
+                tmpDir = void 0;
+                _context3.prev = 1;
+                _context3.next = 4;
+                return this._createTmpDir();
+
+              case 4:
+                tmpDir = _context3.sent;
+
+                logger.debug('Dir: ', tmpDir.path);
+                _context3.next = 11;
+                break;
+
+              case 8:
+                _context3.prev = 8;
+                _context3.t0 = _context3['catch'](1);
+                throw logger.error(_context3.t0);
+
+              case 11:
+
+                // set the output for the flv
+                flvFilePath = tmpDir.path + '/source.flv';
+                _context3.prev = 12;
+                _context3.next = 15;
+                return this._convertToFlv(input, flvFilePath);
+
+              case 15:
+                _context3.next = 20;
+                break;
+
+              case 17:
+                _context3.prev = 17;
+                _context3.t1 = _context3['catch'](12);
+                throw logger.error(_context3.t1);
+
+              case 20:
+
+                logger.debug(flvFilePath);
+
+                srt = void 0;
+                _context3.prev = 22;
+                _context3.next = 25;
+                return this.libcaption.flv2srt(flvFilePath);
+
+              case 25:
+                srt = _context3.sent;
+                _context3.next = 31;
+                break;
+
+              case 28:
+                _context3.prev = 28;
+                _context3.t2 = _context3['catch'](22);
+                throw logger.error(_context3.t2);
+
+              case 31:
+
+                logger.debug(srt);
+
+                return _context3.abrupt('return', srt);
+
+              case 33:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this, [[1, 8], [12, 17], [22, 28]]);
+      }));
+
+      function mp42srt(_x7) {
+        return _ref3.apply(this, arguments);
+      }
+
+      return mp42srt;
+    }()
+  }, {
+    key: 'ts2srt',
+    value: function () {
+      var _ref4 = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(input) {
+        var srt;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                srt = void 0;
+                _context4.prev = 1;
+                _context4.next = 4;
+                return this.libcaption.ts2srt(input);
+
+              case 4:
+                srt = _context4.sent;
+                _context4.next = 10;
+                break;
+
+              case 7:
+                _context4.prev = 7;
+                _context4.t0 = _context4['catch'](1);
+                throw logger.error(_context4.t0);
+
+              case 10:
+
+                logger.debug(srt);
+
+                return _context4.abrupt('return', srt);
+
+              case 12:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this, [[1, 7]]);
+      }));
+
+      function ts2srt(_x8) {
+        return _ref4.apply(this, arguments);
+      }
+
+      return ts2srt;
     }()
   }, {
     key: '_convertToFlv',
-    value: function _convertToFlv(mp4FilePath, output) {
+    value: function _convertToFlv(input, output) {
       return new Promise(function (resolve, reject) {
 
-        (0, _ffmpegNode.exec)(['-i', mp4FilePath, '-codec', 'copy', '-f', 'flv', output], function (stderr, stdout, code) {
+        (0, _ffmpegNode.exec)(['-i', input, '-codec', 'copy', '-f', 'flv', output], function (stderr, stdout, code) {
           if (code !== 0) {
             return reject(stderr);
           }
@@ -157,7 +385,7 @@ var LibCaptionNode = function () {
         /* we need to convert the container over to an flv
          This step will not re-encode your video
          */
-        (0, _ffmpegNode.exec)(['-i', videoFilePath, '-codec', 'copy', '-y', output // Overwrite the original
+        (0, _ffmpegNode.exec)(['-loglevel', 'panic', '-i', videoFilePath, '-codec', 'copy', '-y', output // Overwrite the original
         ], function (stderr, stdout, code) {
           if (code !== 0) {
             return reject(stderr);
